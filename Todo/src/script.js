@@ -1,40 +1,58 @@
 "use strict";
+// TypeScript-Datei
+let historyList = [];
+const maxHistoryItems = 10;
 function addTodo() {
-    // Holen Sie das Eingabefeld und die To-Do-Liste aus dem DOM
     const todoInput = document.getElementById('todoInput');
     const todoList = document.getElementById('todoList');
-    // Überprüfen, ob das Eingabefeld leer ist
-    if (todoInput.value.trim() === '') {
+    if (!todoInput || !todoList) {
+        console.error("Elemente nicht gefunden");
+        return;
+    }
+    if (!todoInput.value.trim()) {
         alert('Bitte geben Sie eine Aufgabe ein!');
         return;
     }
-    // Erstellen eines neuen Listenelements für die To-Do-Aufgabe
     const listItem = document.createElement('li');
     listItem.className = 'todo-item';
-    // Erstellen eines Kontrollkästchens für die Aufgabe
+    listItem.style.backgroundColor = getRandomRainbowColor();
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.onclick = () => {
-        // Umschalten der 'completed'-Klasse basierend auf dem Kontrollkästchenstatus
         todoText.classList.toggle('completed', checkbox.checked);
+        if (checkbox.checked) {
+            addToHistory(todoText.textContent || "Unbekannte Aufgabe");
+            listItem.remove();
+        }
     };
-    // Erstellen eines Span-Elements für den Text der Aufgabe
     const todoText = document.createElement('span');
     todoText.className = 'todo-text';
     todoText.textContent = todoInput.value;
-    // Erstellen eines Löschbuttons für die Aufgabe
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Löschen';
-    deleteButton.onclick = () => {
-        // Entfernen des Listenelements aus der To-Do-Liste
-        listItem.remove();
-    };
-    // Hinzufügen des Kontrollkästchens, des Textes und des Löschbuttons zum Listenelement
+    deleteButton.onclick = () => listItem.remove();
     listItem.appendChild(checkbox);
     listItem.appendChild(todoText);
     listItem.appendChild(deleteButton);
-    // Hinzufügen des Listenelements zur To-Do-Liste
     todoList.appendChild(listItem);
-    // Leeren des Eingabefelds
     todoInput.value = '';
+}
+function getRandomRainbowColor() {
+    const colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+function addToHistory(task) {
+    const historyContainer = document.getElementById('historyContainer');
+    const hiddenList = document.getElementById('hiddenHistory');
+    if (!historyContainer || !hiddenList) {
+        console.error("Historien-Container nicht gefunden");
+        return;
+    }
+    const historyItem = document.createElement('li');
+    historyItem.textContent = `${task} - Erledigt am: ${new Date().toLocaleDateString()} um ${new Date().toLocaleTimeString()}`;
+    historyList.push(historyItem);
+    if (historyList.length > maxHistoryItems) {
+        hiddenList.appendChild(historyList.shift());
+    }
+    historyContainer.appendChild(historyItem);
 }

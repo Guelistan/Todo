@@ -1,47 +1,77 @@
-function addTodo(): void {
-    // Holen Sie das Eingabefeld und die To-Do-Liste aus dem DOM
-    const todoInput = document.getElementById('todoInput') as HTMLInputElement;
-    const todoList = document.getElementById('todoList') as HTMLUListElement;
+// TypeScript-Datei
 
-    // Überprüfen, ob das Eingabefeld leer ist
-    if (todoInput.value.trim() === '') {
+interface Task {
+    text: string;
+    completedAt?: Date;
+}
+
+let historyList: HTMLElement[] = [];
+const maxHistoryItems: number = 10;
+
+function addTodo(): void {
+    const todoInput: HTMLInputElement | null = document.getElementById('todoInput') as HTMLInputElement;
+    const todoList: HTMLUListElement | null = document.getElementById('todoList') as HTMLUListElement;
+
+    if (!todoInput || !todoList) {
+        console.error("Elemente nicht gefunden");
+        return;
+    }
+
+    if (!todoInput.value.trim()) {
         alert('Bitte geben Sie eine Aufgabe ein!');
         return;
     }
 
-    // Erstellen eines neuen Listenelements für die To-Do-Aufgabe
-    const listItem = document.createElement('li');
+    const listItem: HTMLLIElement = document.createElement('li');
     listItem.className = 'todo-item';
+    listItem.style.backgroundColor = getRandomRainbowColor();
 
-    // Erstellen eines Kontrollkästchens für die Aufgabe
-    const checkbox = document.createElement('input');
+    const checkbox: HTMLInputElement = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.onclick = () => {
-        // Umschalten der 'completed'-Klasse basierend auf dem Kontrollkästchenstatus
         todoText.classList.toggle('completed', checkbox.checked);
+        if (checkbox.checked) {
+            addToHistory(todoText.textContent || "Unbekannte Aufgabe");
+            listItem.remove();
+        }
     };
 
-    // Erstellen eines Span-Elements für den Text der Aufgabe
-    const todoText = document.createElement('span');
+    const todoText: HTMLSpanElement = document.createElement('span');
     todoText.className = 'todo-text';
     todoText.textContent = todoInput.value;
 
-    // Erstellen eines Löschbuttons für die Aufgabe
-    const deleteButton = document.createElement('button');
+    const deleteButton: HTMLButtonElement = document.createElement('button');
     deleteButton.textContent = 'Löschen';
-    deleteButton.onclick = () => {
-        // Entfernen des Listenelements aus der To-Do-Liste
-        listItem.remove();
-    };
+    deleteButton.onclick = () => listItem.remove();
 
-    // Hinzufügen des Kontrollkästchens, des Textes und des Löschbuttons zum Listenelement
     listItem.appendChild(checkbox);
     listItem.appendChild(todoText);
     listItem.appendChild(deleteButton);
-
-    // Hinzufügen des Listenelements zur To-Do-Liste
     todoList.appendChild(listItem);
-
-    // Leeren des Eingabefelds
     todoInput.value = '';
+}
+
+function getRandomRainbowColor(): string {
+    const colors: string[] = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF'];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function addToHistory(task: string): void {
+    const historyContainer: HTMLUListElement | null = document.getElementById('historyContainer') as HTMLUListElement;
+    const hiddenList: HTMLUListElement | null = document.getElementById('hiddenHistory') as HTMLUListElement;
+
+    if (!historyContainer || !hiddenList) {
+        console.error("Historien-Container nicht gefunden");
+        return;
+    }
+
+    const historyItem: HTMLLIElement = document.createElement('li');
+    historyItem.textContent = `${task} - Erledigt am: ${new Date().toLocaleDateString()} um ${new Date().toLocaleTimeString()}`;
+    historyList.push(historyItem);
+
+    if (historyList.length > maxHistoryItems) {
+        hiddenList.appendChild(historyList.shift()!);
+    }
+
+    historyContainer.appendChild(historyItem);
 }

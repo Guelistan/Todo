@@ -10,9 +10,15 @@
 
 <body>
     <h1>To-Do Liste</h1>
-    <input type="text" id="todoInput" placeholder="Neue Aufgabe hinzufügen">
-    <button onclick="addTodo()">Hinzufügen</button>
-    <ul id="todoList"></ul>
+    <div id="todoApp">
+        <input type="text" id="todoInput" placeholder="Neue Aufgabe hinzufügen">
+        <button onclick="addTodo()">Hinzufügen</button>
+        <ul id="todoList"></ul>
+    </div>
+    <h2>Erledigte Aufgaben</h2>
+    <ul id="historyContainer"></ul>
+    <h3>Ältere erledigte Aufgaben</h3>
+    <ul id="hiddenHistory"></ul>
     <script src="script.js"></script>
 </body>
 
